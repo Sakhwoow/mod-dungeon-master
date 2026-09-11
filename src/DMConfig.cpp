@@ -90,6 +90,9 @@ void DMConfig::LoadConfig(bool reload)
     _itemChance   = sConfigMgr->GetOption<uint32>("DungeonMaster.Rewards.ItemChance",  80);
     _rareChance   = sConfigMgr->GetOption<uint32>("DungeonMaster.Rewards.RareChance",  40);
     _epicChance   = sConfigMgr->GetOption<uint32>("DungeonMaster.Rewards.EpicChance",  15);
+    _bonusTokenEntry       = sConfigMgr->GetOption<uint32>("DungeonMaster.Rewards.BonusTokenEntry",       0);
+    _bonusTokensPerDungeon = sConfigMgr->GetOption<uint32>("DungeonMaster.Rewards.BonusTokensPerDungeon", 50);
+    _bonusTokensPerBoss    = sConfigMgr->GetOption<uint32>("DungeonMaster.Rewards.BonusTokensPerBoss",    1);
 
     // Dungeon settings
     _bossCount       = sConfigMgr->GetOption<uint32>("DungeonMaster.Dungeon.BossCount",      1);

@@ -1732,6 +1732,9 @@ void DungeonMasterMgr::HandleCreatureDeath(Creature* creature, Session* session)
 void DungeonMasterMgr::HandleBossDeath(Session* session)
 {
     if (!session) return;
+    const DifficultyTier* diff = sDMConfig->GetDifficulty(session->DifficultyId);
+    float mult = diff ? diff->RewardMultiplier : 1.0f;
+    uint32 tokenCount = static_cast<uint32>(sDMConfig->GetBonusTokensPerBoss() * mult);
     for (const auto& pd : session->Players)
         if (Player* p = ObjectAccessor::FindPlayer(pd.PlayerGuid))
         {
@@ -1743,6 +1746,8 @@ void DungeonMasterMgr::HandleBossDeath(Session* session)
                     session->TotalBosses - session->BossesKilled);
                 ChatHandler(p->GetSession()).SendSysMessage(buf);
             }
+            if (tokenCount > 0)
+                GiveBonusTokens(p, tokenCount);
         }
 }
 
@@ -1919,6 +1924,10 @@ void DungeonMasterMgr::DistributeRewards(Session* session)
             quality = 3;
 
         GiveItemReward(p, rewardLevel, quality);
+
+        uint32 tokenCount = static_cast<uint32>(sDMConfig->GetBonusTokensPerDungeon() * diff->RewardMultiplier);
+        if (tokenCount > 0)
+            GiveBonusTokens(p, tokenCount);
     }
 }
 
@@ -1956,6 +1965,56 @@ void DungeonMasterMgr::GiveGoldReward(Player* player, uint32 amount)
             "|cFFFFD700[Dungeon Master]|r Вы получили: |cFFFFD700%u|rз |cFFC0C0C0%u|rс |cFFB87333%u|rм",
             amount / 10000, (amount % 10000) / 100, amount % 100);
         ChatHandler(player->GetSession()).SendSysMessage(buf);
+    }
+}
+
+void DungeonMasterMgr::GiveBonusTokens(Player* player, uint32 count)
+{
+    uint32 tokenEntry = sDMConfig->GetBonusTokenEntry();
+    if (!tokenEntry || !count || !player) return;
+
+    if (!sObjectMgr->GetItemTemplate(tokenEntry))
+    {
+        LOG_WARN("module", "DungeonMaster: BonusTokenEntry {} not found in item_template", tokenEntry);
+        return;
+    }
+
+    ItemPosCountVec dest;
+    if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, tokenEntry, count) == EQUIP_ERR_OK)
+    {
+        if (Item* item = player->StoreNewItem(dest, tokenEntry, true))
+        {
+            player->SendNewItem(item, count, true, false);
+            if (player->GetSession())
+            {
+                char buf[128];
+                snprintf(buf, sizeof(buf),
+                    "|cFF00FF00[Dungeon Master]|r Вы получили |cFFFFFFFF%u|r Токен Азерот!", count);
+                ChatHandler(player->GetSession()).SendSysMessage(buf);
+            }
+        }
+    }
+    else
+    {
+        // Bags full — mail the tokens
+        Item* mailItem = Item::CreateItem(tokenEntry, count, player);
+        if (mailItem)
+        {
+            CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+            MailDraft("Награда Мастера подземелий", "Ваши токены Азерот ждут вас!")
+                .AddItem(mailItem)
+                .SendMailTo(trans,
+                    MailReceiver(player, player->GetGUID().GetCounter()),
+                    MailSender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM));
+            CharacterDatabase.CommitTransaction(trans);
+            if (player->GetSession())
+            {
+                char buf[128];
+                snprintf(buf, sizeof(buf),
+                    "|cFF00FF00[Dungeon Master]|r Сумки заполнены! |cFFFFFFFF%u|r Токен Азерот отправлен почтой.", count);
+                ChatHandler(player->GetSession()).SendSysMessage(buf);
+            }
+        }
     }
 }
 

@@ -117,6 +117,7 @@ private:
 
     void   GiveGoldReward(Player* player, uint32 amount);
     void   GiveItemReward(Player* player, uint8 rewardLevel, uint8 quality);
+    void   GiveBonusTokens(Player* player, uint32 count);
     void   MailItemReward(Player* player, uint8 level, uint8 quality,
                           const std::string& subject, const std::string& body);
     void   GiveKillXP(Session* session, bool isBoss, bool isElite);

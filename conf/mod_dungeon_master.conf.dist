@@ -124,6 +124,23 @@ DungeonMaster.Rewards.GoldPerBoss = 10000
 #    DungeonMaster.Rewards.XPMultiplier             Default: 1.0
 DungeonMaster.Rewards.XPMultiplier = 1.0
 
+#    DungeonMaster.Rewards.BonusTokenEntry
+#        Item entry of the bonus token to award (0 = disabled)
+#        Default: 0
+DungeonMaster.Rewards.BonusTokenEntry = 0
+
+#    DungeonMaster.Rewards.BonusTokensPerDungeon
+#        Base token count awarded on dungeon completion (scaled by difficulty RewardMultiplier)
+#        Example: 50 * 4.0 (Master) = 200 tokens per run
+#        Default: 50
+DungeonMaster.Rewards.BonusTokensPerDungeon = 50
+
+#    DungeonMaster.Rewards.BonusTokensPerBoss
+#        Base token count awarded per boss kill (scaled by difficulty RewardMultiplier)
+#        Example: 1 * 4.0 (Master) = 4 tokens per boss
+#        Default: 1
+DungeonMaster.Rewards.BonusTokensPerBoss = 1
+
 #    DungeonMaster.Rewards.ItemChance  (0-100)      Default: 80
 DungeonMaster.Rewards.ItemChance = 80
 

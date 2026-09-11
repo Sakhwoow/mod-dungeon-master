@@ -64,6 +64,9 @@ public:
     uint32 GetItemChance()   const { return _itemChance; }
     uint32 GetRareChance()   const { return _rareChance; }
     uint32 GetEpicChance()   const { return _epicChance; }
+    uint32 GetBonusTokenEntry()          const { return _bonusTokenEntry; }
+    uint32 GetBonusTokensPerDungeon()    const { return _bonusTokensPerDungeon; }
+    uint32 GetBonusTokensPerBoss()       const { return _bonusTokensPerBoss; }
 
     // --- Dungeon population ---
     uint32 GetBossCount()       const { return _bossCount; }
@@ -141,6 +144,9 @@ private:
     uint32 _itemChance  = 80;
     uint32 _rareChance  = 40;
     uint32 _epicChance  = 15;
+    uint32 _bonusTokenEntry         = 0;
+    uint32 _bonusTokensPerDungeon   = 50;
+    uint32 _bonusTokensPerBoss      = 1;
 
     // Dungeon
     uint32 _bossCount       = 1;
