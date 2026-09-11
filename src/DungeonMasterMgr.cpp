@@ -777,8 +777,8 @@ bool DungeonMasterMgr::TeleportPartyIn(Session* session)
                 p->GetName(), session->MapId, ent.GetPositionX(), ent.GetPositionY(), ent.GetPositionZ());
             char buf[256];
             snprintf(buf, sizeof(buf),
-                "|cFF00FF00[Dungeon Master]|r Welcome to |cFFFFFFFF%s|r! "
-                "Defeat the boss to claim your reward.",
+                "|cFF00FF00[Dungeon Master]|r Добро пожаловать в |cFFFFFFFF%s|r! "
+                "Победите босса, чтобы получить награду.",
                 dg->Name.c_str());
             ChatHandler(p->GetSession()).SendSysMessage(buf);
 
@@ -787,7 +787,7 @@ bool DungeonMasterMgr::TeleportPartyIn(Session* session)
                 std::string affixNames = sRoguelikeMgr->GetActiveAffixNames(session->RoguelikeRunId);
                 char affixBuf[512];
                 snprintf(affixBuf, sizeof(affixBuf),
-                    "|cFF00FFFF[Roguelike]|r Active affixes: %s", affixNames.c_str());
+                    "|cFF00FFFF[Roguelike]|r Активные аффиксы: %s", affixNames.c_str());
                 ChatHandler(p->GetSession()).SendSysMessage(affixBuf);
             }
         }
@@ -796,7 +796,7 @@ bool DungeonMasterMgr::TeleportPartyIn(Session* session)
             LOG_ERROR("module", "DungeonMaster: TeleportTo FAILED for {} → map {} ({:.1f}, {:.1f}, {:.1f})",
                 p->GetName(), session->MapId, ent.GetPositionX(), ent.GetPositionY(), ent.GetPositionZ());
             ChatHandler(p->GetSession()).SendSysMessage(
-                "|cFFFF0000[Dungeon Master]|r Teleport failed! You may lack access to this dungeon.");
+                "|cFFFF0000[Dungeon Master]|r Телепорт не удался! Возможно, у вас нет доступа к этому подземелью.");
         }
     }
 
@@ -1394,7 +1394,7 @@ void DungeonMasterMgr::PopulateDungeon(Session* session, InstanceMap* map)
                         if (Player* p = ObjectAccessor::FindPlayer(pd.PlayerGuid))
                             if (p->GetSession())
                                 ChatHandler(p->GetSession()).SendSysMessage(
-                                    "|cFFFFD700[Dungeon Master]|r A |cFFFF8800rare enemy|r lurks in this dungeon!");
+                                    "|cFFFFD700[Dungeon Master]|r В этом подземелье затаился |cFFFF8800редкий враг|r!");
 
                     LOG_INFO("module", "DungeonMaster: Rare creature spawned — entry {} at ({:.1f}, {:.1f}, {:.1f})",
                         rareEntry, rareSP.Pos.GetPositionX(), rareSP.Pos.GetPositionY(), rareSP.Pos.GetPositionZ());
@@ -1739,7 +1739,7 @@ void DungeonMasterMgr::HandleBossDeath(Session* session)
             {
                 char buf[128];
                 snprintf(buf, sizeof(buf),
-                    "|cFFFFFF00[Dungeon Master]|r Boss defeated! |cFFFFFFFF%u|r remaining.",
+                    "|cFFFFFF00[Dungeon Master]|r Босс повержен! Осталось: |cFFFFFFFF%u|r.",
                     session->TotalBosses - session->BossesKilled);
                 ChatHandler(p->GetSession()).SendSysMessage(buf);
             }
@@ -1862,7 +1862,7 @@ void DungeonMasterMgr::HandlePlayerDeath(Player* player, Session* session)
             if (!p->IsAlive()) { p->ResurrectPlayer(1.0f); p->SpawnCorpseBones(); }
             if (p->GetSession())
                 ChatHandler(p->GetSession()).SendSysMessage(
-                    "|cFFFF0000[Dungeon Master]|r Total party wipe! Challenge failed.");
+                    "|cFFFF0000[Dungeon Master]|r Вся группа уничтожена! Испытание провалено.");
             p->TeleportTo(psd.ReturnMapId, psd.ReturnPosition.GetPositionX(),
                 psd.ReturnPosition.GetPositionY(), psd.ReturnPosition.GetPositionZ(),
                 psd.ReturnPosition.GetOrientation());
@@ -1872,8 +1872,8 @@ void DungeonMasterMgr::HandlePlayerDeath(Player* player, Session* session)
     {
         if (player->GetSession())
             ChatHandler(player->GetSession()).SendSysMessage(
-                "|cFFFFFF00[Dungeon Master]|r You have fallen! "
-                "You will be revived when your group leaves combat.");
+                "|cFFFFFF00[Dungeon Master]|r Вы пали! "
+                "Вас воскресят, когда группа выйдет из боя.");
     }
 }
 
@@ -1953,7 +1953,7 @@ void DungeonMasterMgr::GiveGoldReward(Player* player, uint32 amount)
     {
         char buf[128];
         snprintf(buf, sizeof(buf),
-            "|cFFFFD700[Dungeon Master]|r You received: |cFFFFD700%u|rg |cFFC0C0C0%u|rs |cFFB87333%u|rc",
+            "|cFFFFD700[Dungeon Master]|r Вы получили: |cFFFFD700%u|rз |cFFC0C0C0%u|rс |cFFB87333%u|rм",
             amount / 10000, (amount % 10000) / 100, amount % 100);
         ChatHandler(player->GetSession()).SendSysMessage(buf);
     }
@@ -1981,7 +1981,7 @@ void DungeonMasterMgr::GiveItemReward(Player* player, uint8 level, uint8 quality
             player->GetName(), level, playerClass, quality, _rewardItems.size());
         if (player->GetSession())
             ChatHandler(player->GetSession()).SendSysMessage(
-                "|cFFFF0000[Dungeon Master]|r No suitable gear found for your level and class. Gold only.");
+                "|cFFFF0000[Dungeon Master]|r Подходящего снаряжения не найдено для вашего уровня и класса. Только золото.");
         return;
     }
 
@@ -2000,7 +2000,7 @@ void DungeonMasterMgr::GiveItemReward(Player* player, uint8 level, uint8 quality
                 {
                     char buf[256];
                     snprintf(buf, sizeof(buf),
-                        "|cFFFFD700[Dungeon Master]|r You received: |cFFFFFFFF%s|r", t->Name1.c_str());
+                        "|cFFFFD700[Dungeon Master]|r Вы получили: |cFFFFFFFF%s|r", t->Name1.c_str());
                     ChatHandler(player->GetSession()).SendSysMessage(buf);
                 }
             }
@@ -2013,7 +2013,7 @@ void DungeonMasterMgr::GiveItemReward(Player* player, uint8 level, uint8 quality
         if (mailItem)
         {
             CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
-            MailDraft("Dungeon Master Reward", "Your bags were full. Here is your reward!")
+            MailDraft("Награда Мастера подземелий", "Ваши сумки были заполнены. Вот ваша награда!")
                 .AddItem(mailItem)
                 .SendMailTo(trans,
                     MailReceiver(player, player->GetGUID().GetCounter()),
@@ -2021,7 +2021,7 @@ void DungeonMasterMgr::GiveItemReward(Player* player, uint8 level, uint8 quality
             CharacterDatabase.CommitTransaction(trans);
             if (player->GetSession())
                 ChatHandler(player->GetSession()).SendSysMessage(
-                    "|cFFFFD700[Dungeon Master]|r Bags full! Reward mailed to you.");
+                    "|cFFFFD700[Dungeon Master]|r Сумки заполнены! Награда отправлена почтой.");
         }
         else
         {
@@ -2095,7 +2095,7 @@ void DungeonMasterMgr::MailItemReward(Player* player, uint8 level, uint8 quality
             {
                 char buf[256];
                 snprintf(buf, sizeof(buf),
-                    "|cFFFFD700[Dungeon Master]|r Reward mailed: |cFFFFFFFF%s|r", t->Name1.c_str());
+                    "|cFFFFD700[Dungeon Master]|r Награда отправлена почтой: |cFFFFFFFF%s|r", t->Name1.c_str());
                 ChatHandler(player->GetSession()).SendSysMessage(buf);
             }
         }
@@ -2163,7 +2163,7 @@ void DungeonMasterMgr::DistributeRoguelikeRewards(uint32 tier, uint8 effectiveLe
 
         if (p->GetSession())
             ChatHandler(p->GetSession()).SendSysMessage(
-                "|cFF00FFFF[Roguelike]|r Rewards added to your inventory!");
+                "|cFF00FFFF[Roguelike]|r Награды добавлены в инвентарь!");
     }
 }
 
@@ -2614,8 +2614,8 @@ void DungeonMasterMgr::EndSession(uint32 sessionId, bool success)
         if (Player* p = ObjectAccessor::FindPlayer(pd.PlayerGuid))
             if (p->GetSession())
                 ChatHandler(p->GetSession()).SendSysMessage(
-                    success ? "|cFF00FF00[Dungeon Master]|r Challenge complete! Distributing rewards..."
-                            : "|cFFFF0000[Dungeon Master]|r Challenge ended. No rewards given.");
+                    success ? "|cFF00FF00[Dungeon Master]|r Испытание завершено! Раздаём награды..."
+                            : "|cFFFF0000[Dungeon Master]|r Испытание окончено. Награды не выданы.");
 
     if (success && s.State == SessionState::Completed)
         DistributeRewards(&s);
@@ -3334,7 +3334,7 @@ void DungeonMasterMgr::Update(uint32 diff)
                                 for (const auto& pd2 : session.Players)
                                     if (Player* p2 = ObjectAccessor::FindPlayer(pd2.PlayerGuid))
                                         ChatHandler(p2->GetSession()).SendSysMessage(
-                                            "|cFF00FF00[Dungeon Master]|r Preparing the challenge...");
+                                            "|cFF00FF00[Dungeon Master]|r Подготовка испытания...");
 
                                 PopulateDungeon(&session, inst);
 
@@ -3344,9 +3344,9 @@ void DungeonMasterMgr::Update(uint32 diff)
 
                                 char buf[256];
                                 snprintf(buf, sizeof(buf),
-                                    "|cFF00FF00[Dungeon Master]|r |cFFFFFFFF%u|r enemies and "
-                                    "|cFFFFFFFF%u|r boss(es) spawned. Creature levels: "
-                                    "|cFFFFFFFF%u-%u|r. Good luck!",
+                                    "|cFF00FF00[Dungeon Master]|r Призвано |cFFFFFFFF%u|r врагов и "
+                                    "|cFFFFFFFF%u|r босс(ов). Уровни существ: "
+                                    "|cFFFFFFFF%u-%u|r. Удачи!",
                                     session.TotalMobs, session.TotalBosses,
                                     session.LevelBandMin, session.LevelBandMax);
                                 for (const auto& pd2 : session.Players)
@@ -3473,7 +3473,7 @@ void DungeonMasterMgr::Update(uint32 diff)
                                     if (Player* p3 = ObjectAccessor::FindPlayer(pd3.PlayerGuid))
                                         if (p3->GetSession())
                                             ChatHandler(p3->GetSession()).SendSysMessage(
-                                                "|cFFFF8000[Dungeon Master]|r The boss enters a new phase!");
+                                                "|cFFFF8000[Dungeon Master]|r Босс переходит в новую фазу!");
                                 break;  // Only promote one phase creature per check
                             }
                         }
@@ -3507,9 +3507,9 @@ void DungeonMasterMgr::Update(uint32 diff)
                                             char buf[256];
                                             snprintf(buf, sizeof(buf),
                                                 "|cFF00FF00[Dungeon Master]|r %s "
-                                                "Rewards in |cFFFFFFFF%u|r seconds...",
+                                                "Награды через |cFFFFFFFF%u|r сек...",
                                                 session.RoguelikeRunId != 0
-                                                    ? "Floor cleared!" : "Dungeon complete!",
+                                                    ? "Подземелье пройдено!" : "Подземелье завершено!",
                                                 delay);
                                             ChatHandler(p->GetSession()).SendSysMessage(buf);
                                         }
@@ -3573,7 +3573,7 @@ void DungeonMasterMgr::Update(uint32 diff)
                                 session.EntrancePos.GetPositionZ(),
                                 session.EntrancePos.GetOrientation());
                             ChatHandler(p->GetSession()).SendSysMessage(
-                                "|cFF00FF00[Dungeon Master]|r Revived at entrance. Get back in there!");
+                                "|cFF00FF00[Dungeon Master]|r Воскрешены у входа. Вперёд!");
                         }
                     }
                 }
@@ -3590,7 +3590,7 @@ void DungeonMasterMgr::Update(uint32 diff)
                     for (const auto& pd : session.Players)
                         if (Player* p = ObjectAccessor::FindPlayer(pd.PlayerGuid))
                             ChatHandler(p->GetSession()).SendSysMessage(
-                                "|cFFFF0000[Dungeon Master]|r Time's up! Challenge failed.");
+                                "|cFFFF0000[Dungeon Master]|r Время вышло! Испытание провалено.");
                     continue;
                 }
             }
@@ -3614,8 +3614,8 @@ void DungeonMasterMgr::Update(uint32 diff)
                         {
                             char cbuf[128];
                             snprintf(cbuf, sizeof(cbuf),
-                                "|cFF00FFFF[Roguelike]|r Next dungeon in |cFFFFFFFF%u|r second%s...",
-                                remaining, remaining != 1 ? "s" : "");
+                                "|cFF00FFFF[Roguelike]|r Следующее подземелье через |cFFFFFFFF%u|r сек...",
+                                remaining);
                             for (const auto& pd3 : session.Players)
                                 if (Player* p3 = ObjectAccessor::FindPlayer(pd3.PlayerGuid))
                                     if (p3->GetSession())

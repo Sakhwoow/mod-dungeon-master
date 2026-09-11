@@ -124,7 +124,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (!sDMConfig->IsRoguelikeEnabled())
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r Roguelike mode is disabled.");
+            "|cFFFF0000[Roguelike]|r Режим roguelike отключён.");
         return false;
     }
 
@@ -132,7 +132,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (IsPlayerInRun(leader->GetGUID()))
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r You are already in a roguelike run!");
+            "|cFFFF0000[Roguelike]|r Вы уже в roguelike-забеге!");
         return false;
     }
 
@@ -140,7 +140,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (sDungeonMasterMgr->GetSessionByPlayer(leader->GetGUID()))
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r You are in an active dungeon challenge!");
+            "|cFFFF0000[Roguelike]|r Вы участвуете в активном испытании!");
         return false;
     }
 
@@ -150,7 +150,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
         uint32 rem = sDungeonMasterMgr->GetRemainingCooldown(leader->GetGUID());
         char buf[256];
         snprintf(buf, sizeof(buf),
-            "|cFFFF0000[Roguelike]|r Wait |cFFFFFFFF%u|r min |cFFFFFFFF%u|r sec before starting.",
+            "|cFFFF0000[Roguelike]|r Подождите |cFFFFFFFF%u|r мин |cFFFFFFFF%u|r сек перед началом.",
             rem / 60, rem % 60);
         ChatHandler(leader->GetSession()).SendSysMessage(buf);
         return false;
@@ -160,7 +160,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (!sDungeonMasterMgr->CanCreateNewSession())
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r Too many active challenges. Try again later.");
+            "|cFFFF0000[Roguelike]|r Слишком много активных испытаний. Попробуйте позже.");
         return false;
     }
 
@@ -222,7 +222,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (!mapId)
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r No dungeons available for your level!");
+            "|cFFFF0000[Roguelike]|r Нет доступных подземелий для вашего уровня!");
         return false;
     }
 
@@ -236,7 +236,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (!session)
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r Failed to create dungeon session!");
+            "|cFFFF0000[Roguelike]|r Не удалось создать сессию!");
         return false;
     }
 
@@ -248,7 +248,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (!sDungeonMasterMgr->StartDungeon(session))
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r Failed to initialize dungeon!");
+            "|cFFFF0000[Roguelike]|r Не удалось инициализировать подземелье!");
         sDungeonMasterMgr->CleanupRoguelikeSession(session->SessionId, false);
         return false;
     }
@@ -256,7 +256,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     if (!sDungeonMasterMgr->TeleportPartyIn(session))
     {
         ChatHandler(leader->GetSession()).SendSysMessage(
-            "|cFFFF0000[Roguelike]|r Teleport failed!");
+            "|cFFFF0000[Roguelike]|r Телепорт не удался!");
         sDungeonMasterMgr->CleanupRoguelikeSession(session->SessionId, false);
         return false;
     }
@@ -283,8 +283,8 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
     const Theme* theme = sDMConfig->GetTheme(themeId);
     char buf[256];
     snprintf(buf, sizeof(buf),
-        "|cFF00FFFF[Roguelike]|r |cFFFFD700%s|r started a Roguelike Run! "
-        "Theme: |cFF00FF00%s|r — How far can you go?",
+        "|cFF00FFFF[Roguelike]|r |cFFFFD700%s|r начинает Roguelike-забег! "
+        "Тема: |cFF00FF00%s|r — Как далеко вы зайдёте?",
         leader->GetName().c_str(),
         theme ? theme->Name.c_str() : "Random");
 
@@ -300,7 +300,7 @@ bool RoguelikeMgr::StartRun(Player* leader, uint32 difficultyId, uint32 themeId,
         {
             char affixBuf[512];
             snprintf(affixBuf, sizeof(affixBuf),
-                "|cFF00FFFF[Roguelike]|r Active affixes: %s",
+                "|cFF00FFFF[Roguelike]|r Активные аффиксы: %s",
                 affixNames.c_str());
             for (const auto& pd : run.Players)
                 if (Player* p = ObjectAccessor::FindPlayer(pd.PlayerGuid))
@@ -382,8 +382,8 @@ void RoguelikeMgr::OnDungeonCompleted(uint32 runId, uint32 sessionId)
     // Announce progress
     char buf[512];
     snprintf(buf, sizeof(buf),
-        "|cFF00FFFF[Roguelike]|r |cFFFFD700Floor %u cleared!|r "
-        "Advancing to |cFFFF0000Tier %u|r...",
+        "|cFF00FFFF[Roguelike]|r |cFFFFD700Подз. %u пройдено!|r "
+        "Переход на |cFFFF0000Уровень %u|r...",
         run->DungeonsCleared, run->CurrentTier);
 
     // Append active affixes
@@ -403,7 +403,7 @@ void RoguelikeMgr::OnDungeonCompleted(uint32 runId, uint32 sessionId)
     if (!affixStr.empty())
     {
         size_t len = strlen(buf);
-        snprintf(buf + len, sizeof(buf) - len, " Affixes: %s", affixStr.c_str());
+        snprintf(buf + len, sizeof(buf) - len, " Аффиксы: %s", affixStr.c_str());
     }
 
     AnnounceToRun(*run, buf);
@@ -417,8 +417,8 @@ void RoguelikeMgr::OnDungeonCompleted(uint32 runId, uint32 sessionId)
         // Failed to create next dungeon — end the run gracefully
         char failBuf[256];
         snprintf(failBuf, sizeof(failBuf),
-            "|cFFFF0000[Roguelike]|r No more dungeons available! "
-            "Run ended at |cFFFFD700Tier %u|r after |cFFFFFFFF%u|r floors.",
+            "|cFFFF0000[Roguelike]|r Больше нет доступных подземелий! "
+            "Забег завершён на |cFFFFD700уровне %u|r после |cFFFFFFFF%u|r подз.",
             run->CurrentTier, run->DungeonsCleared);
         AnnounceToRun(*run, failBuf);
         EndRun(run->RunId, true);
@@ -453,15 +453,15 @@ void RoguelikeMgr::OnPartyWipe(uint32 runId)
 
     char buf[512];
     snprintf(buf, sizeof(buf),
-        "|cFFFF0000[Roguelike]|r |cFFFF4444TOTAL PARTY WIPE!|r "
-        "Your run has ended.\n"
-        "|cFF00FFFF[Roguelike]|r Final Results:\n"
-        "  Tier Reached: |cFFFFD700%u|r\n"
-        "  Floors Cleared: |cFFFFFFFF%u|r\n"
-        "  Mobs Killed: |cFFFFFFFF%u|r\n"
-        "  Bosses Slain: |cFFFFFFFF%u|r\n"
-        "  Total Deaths: |cFFFF0000%u|r\n"
-        "  Run Duration: |cFF00FFFF%um %02us|r",
+        "|cFFFF0000[Roguelike]|r |cFFFF4444ВСЯ ГРУППА УНИЧТОЖЕНА!|r "
+        "Ваш забег окончен.\n"
+        "|cFF00FFFF[Roguelike]|r Итоги:\n"
+        "  Достигнутый уровень: |cFFFFD700%u|r\n"
+        "  Пройдено подземелий: |cFFFFFFFF%u|r\n"
+        "  Убито врагов: |cFFFFFFFF%u|r\n"
+        "  Убито боссов: |cFFFFFFFF%u|r\n"
+        "  Всего смертей: |cFFFF0000%u|r\n"
+        "  Длительность: |cFF00FFFF%uм %02uс|r",
         run->CurrentTier, run->DungeonsCleared,
         run->TotalMobsKilled, run->TotalBossesKilled,
         run->TotalDeaths, dm, ds);
@@ -541,12 +541,12 @@ void RoguelikeMgr::EndRun(uint32 runId, bool announceResults)
 
         char buf[512];
         snprintf(buf, sizeof(buf),
-            "|cFF00FFFF[Roguelike]|r Run complete!\n"
-            "  Tier Reached: |cFFFFD700%u|r\n"
-            "  Floors Cleared: |cFFFFFFFF%u|r\n"
-            "  Mobs Killed: |cFFFFFFFF%u|r\n"
-            "  Bosses Slain: |cFFFFFFFF%u|r\n"
-            "  Run Duration: |cFF00FFFF%um %02us|r",
+            "|cFF00FFFF[Roguelike]|r Забег завершён!\n"
+            "  Достигнутый уровень: |cFFFFD700%u|r\n"
+            "  Пройдено подземелий: |cFFFFFFFF%u|r\n"
+            "  Убито врагов: |cFFFFFFFF%u|r\n"
+            "  Убито боссов: |cFFFFFFFF%u|r\n"
+            "  Длительность: |cFF00FFFF%uм %02uс|r",
             run->CurrentTier, run->DungeonsCleared,
             run->TotalMobsKilled, run->TotalBossesKilled,
             dm, ds);
@@ -868,7 +868,7 @@ void RoguelikeMgr::IncrementBuffStacks(uint32 runId)
     float totalPct = BUFF_PCT_PER_STACK * run->BuffStacks;
     char buf[256];
     snprintf(buf, sizeof(buf),
-        "|cFF00FFFF[Roguelike]|r |cFF00FF00+%.0f%% All Stats|r (Stack %u)",
+        "|cFF00FFFF[Roguelike]|r |cFF00FF00+%.0f%% ко всем характеристикам|r (заряд %u)",
         totalPct, run->BuffStacks);
     AnnounceToRun(*run, buf);
 }
@@ -1043,7 +1043,7 @@ bool RoguelikeMgr::TransitionToNextDungeon(RoguelikeRun& run)
     const DungeonInfo* dg = sDMConfig->GetDungeon(mapId);
     char buf[256];
     snprintf(buf, sizeof(buf),
-        "|cFF00FFFF[Roguelike]|r Entering |cFFFFFFFF%s|r — Tier |cFFFF0000%u|r",
+        "|cFF00FFFF[Roguelike]|r Входим в |cFFFFFFFF%s|r — Уровень |cFFFF0000%u|r",
         dg ? dg->Name.c_str() : "Unknown", run.CurrentTier);
     AnnounceToRun(run, buf);
 
@@ -1094,8 +1094,8 @@ void RoguelikeMgr::AnnounceCountdown(const RoguelikeRun& run, uint32 remainingSe
 {
     char buf[128];
     snprintf(buf, sizeof(buf),
-        "|cFF00FFFF[Roguelike]|r Next dungeon in |cFFFFFFFF%u|r second%s...",
-        remainingSec, remainingSec != 1 ? "s" : "");
+        "|cFF00FFFF[Roguelike]|r Следующее подземелье через |cFFFFFFFF%u|r сек...",
+        remainingSec);
     AnnounceToRun(run, buf);
 }
 
