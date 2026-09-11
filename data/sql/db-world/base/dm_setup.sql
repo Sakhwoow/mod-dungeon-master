@@ -180,8 +180,8 @@ INSERT INTO `creature_template` (
     `ScriptName`
 ) VALUES (
     500001,
-    'Dungeon Provisioner',
-    'Roguelike Supplies',
+    'Поставщик подземелий',
+    'Снаряжение Roguelike',
     80, 80,
     35,     -- friendly to all (green nameplate)
     6785,   -- GOSSIP(1) + VENDOR(128) + VENDOR_FOOD(512) + VENDOR_REAGENT(2048) + REPAIR(4096)
