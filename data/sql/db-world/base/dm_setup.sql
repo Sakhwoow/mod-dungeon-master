@@ -44,8 +44,8 @@ INSERT INTO `creature_template` (
     `ScriptName`
 ) VALUES (
     500000,
-    'The Dungeon Master',
-    'Challenge Awaits',
+    'Мастер подземелий',
+    'Испытание ждёт',
     80, 80,
     190,   -- neutral (yellow nameplate)
     1,     -- gossip flag
