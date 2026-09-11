@@ -131,9 +131,9 @@ DungeonMaster.Rewards.BonusTokenEntry = 0
 
 #    DungeonMaster.Rewards.BonusTokensPerDungeon
 #        Base token count awarded on dungeon completion (scaled by difficulty RewardMultiplier)
-#        Example: 50 * 4.0 (Master) = 200 tokens per run
-#        Default: 50
-DungeonMaster.Rewards.BonusTokensPerDungeon = 50
+#        Example: 10 * 4.0 (Master) = 40 tokens per run, 10 * 6.0 (Grandmaster) = 60
+#        Default: 10
+DungeonMaster.Rewards.BonusTokensPerDungeon = 10
 
 #    DungeonMaster.Rewards.BonusTokensPerBoss
 #        Base token count awarded per boss kill (scaled by difficulty RewardMultiplier)
