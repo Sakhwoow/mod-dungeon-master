@@ -86,7 +86,7 @@ public:
         if (!sDMConfig->IsEnabled())
         {
             ChatHandler(player->GetSession()).SendSysMessage(
-                "|cFFFF0000[Dungeon Master]|r The Dungeon Master is currently unavailable.");
+                "|cFFFF0000[Мастер подземелий]|r Мастер подземелий сейчас недоступен.");
             player->PlayerTalkClass->SendCloseGossip();
             return true;
         }
@@ -95,7 +95,7 @@ public:
             LOG_INFO("module", "DungeonMaster: NPC blocked {} — still in active session",
                 player->GetName());
             ChatHandler(player->GetSession()).SendSysMessage(
-                "|cFFFF0000[Dungeon Master]|r You are already in an active challenge!");
+                "|cFFFF0000[Мастер подземелий]|r Вы уже участвуете в активном испытании!");
             player->PlayerTalkClass->SendCloseGossip();
             return true;
         }
@@ -109,22 +109,21 @@ public:
             {
                 char tierBuf[256];
                 snprintf(tierBuf, sizeof(tierBuf),
-                    "|cFF00FFFF[Roguelike]|r Active run — |cFFFFD700Tier %u|r, "
-                    "|cFFFFFFFF%u|r floor%s cleared.",
-                    run->CurrentTier, run->DungeonsCleared,
-                    run->DungeonsCleared != 1 ? "s" : "");
+                    "|cFF00FFFF[Roguelike]|r Активный забег — |cFFFFD700Тир %u|r, "
+                    "пройдено |cFFFFFFFF%u|r подз.",
+                    run->CurrentTier, run->DungeonsCleared);
                 ChatHandler(player->GetSession()).SendSysMessage(tierBuf);
             }
             else
             {
                 ChatHandler(player->GetSession()).SendSysMessage(
-                    "|cFF00FFFF[Roguelike]|r You are in an active roguelike run!");
+                    "|cFF00FFFF[Roguelike]|r Вы участвуете в активном roguelike-забеге!");
             }
 
             AddGossipItemFor(player, GOSSIP_ICON_BATTLE,
-                "|cFFFF0000Quit Roguelike Run|r",
+                "|cFFFF0000Прервать roguelike-забег|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_ROGUELIKE_QUIT);
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Never mind",
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Отмена",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
 
             SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
@@ -137,7 +136,7 @@ public:
                 player->GetName(), rem);
             char buf[256];
             snprintf(buf, sizeof(buf),
-                "|cFFFFFF00[Dungeon Master]|r Wait |cFFFFFFFF%u|r min |cFFFFFFFF%u|r sec before your next challenge.",
+                "|cFFFFFF00[Мастер подземелий]|r Подождите |cFFFFFFFF%u|r мин |cFFFFFFFF%u|r сек до следующего испытания.",
                 rem / 60, rem % 60);
             ChatHandler(player->GetSession()).SendSysMessage(buf);
             player->PlayerTalkClass->SendCloseGossip();
@@ -156,7 +155,7 @@ public:
             if (!sDungeonMasterMgr->CanCreateNewSession())
             {
                 ChatHandler(player->GetSession()).SendSysMessage(
-                    "|cFFFF0000[Dungeon Master]|r Too many challenges running. Try again later.");
+                    "|cFFFF0000[Мастер подземелий]|r Слишком много активных испытаний. Попробуйте позже.");
                 player->PlayerTalkClass->SendCloseGossip();
                 return true;
             }
@@ -265,7 +264,7 @@ public:
             {
                 sRoguelikeMgr->QuitRun(player->GetGUID());
                 ChatHandler(player->GetSession()).SendSysMessage(
-                    "|cFF00FFFF[Roguelike]|r Run abandoned.");
+                    "|cFF00FFFF[Roguelike]|r Забег прерван.");
             }
             player->PlayerTalkClass->SendCloseGossip();
         }
@@ -297,14 +296,14 @@ private:
     void ShowMainMenu(Player* player, Creature* creature)
     {
         player->PlayerTalkClass->ClearMenus();
-        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Begin Challenge",
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "Начать испытание",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_MAIN_START);
         if (sDMConfig->IsRoguelikeEnabled())
-            AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|cFF00FFFFRoguelike Mode|r",
+            AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|cFF00FFFFRoguelike режим|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_ROGUELIKE_START);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "How does this work?",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Как это работает?",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_MAIN_INFO);
-        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700Statistics & Leaderboards|r",
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700Статистика и рейтинги|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_STATS_MENU);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -318,20 +317,20 @@ private:
         {
             char buf[256];
             if (!d.IsValidForLevel(lvl))
-                snprintf(buf, sizeof(buf), "|cFF808080%s|r (Lv %u-%u) - |cFFFF0000Requires %u+|r",
+                snprintf(buf, sizeof(buf), "|cFF808080%s|r (Ур %u-%u) - |cFFFF0000Требуется %u+|r",
                     d.Name.c_str(), d.MinLevel, d.MaxLevel, d.MinLevel);
             else if (!d.IsOnLevelFor(lvl))
-                snprintf(buf, sizeof(buf), "%s |cFF808080(Lv %u-%u — Easy)|r",
+                snprintf(buf, sizeof(buf), "%s |cFF808080(Ур %u-%u — Легко)|r",
                     d.Name.c_str(), d.MinLevel, d.MaxLevel);
             else
-                snprintf(buf, sizeof(buf), "|cFF00FF00%s|r (Lv %u-%u)",
+                snprintf(buf, sizeof(buf), "|cFF00FF00%s|r (Ур %u-%u)",
                     d.Name.c_str(), d.MinLevel, d.MaxLevel);
 
             AddGossipItemFor(player,
                 d.IsValidForLevel(lvl) ? GOSSIP_ICON_BATTLE : GOSSIP_ICON_CHAT,
                 buf, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_DIFF_BASE + d.Id);
         }
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
 
@@ -352,17 +351,17 @@ private:
 
         char buf1[256], buf2[256];
         snprintf(buf1, sizeof(buf1),
-            "|cFF00FF00Scale to Party Level|r (Lv %u) — Full challenge at your level",
+            "|cFF00FF00Масштаб по уровню группы|r (Ур %u) — Полное испытание на вашем уровне",
             partyLevel);
         snprintf(buf2, sizeof(buf2),
-            "|cFFFFD700Use Dungeon Difficulty|r (Lv %u-%u) — Original difficulty range",
+            "|cFFFFD700Сложность подземелья|r (Ур %u-%u) — Оригинальный диапазон уровней",
             diff->MinLevel, diff->MaxLevel);
 
         AddGossipItemFor(player, GOSSIP_ICON_BATTLE, buf1,
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_SCALE_PARTY);
         AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, buf2,
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_SCALE_TIER);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -372,7 +371,7 @@ private:
         player->PlayerTalkClass->ClearMenus();
         for (const auto& t : sDMConfig->GetThemes())
             AddGossipItemFor(player, GOSSIP_ICON_BATTLE, t.Name, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_THEME_BASE + t.Id);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
 
@@ -413,7 +412,7 @@ private:
 
         // "Random Dungeon" stays reachable: shown only on the first page.
         if (page == 0)
-            AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|cFFFFD700Random Dungeon|r",
+            AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|cFFFFD700Случайное подземелье|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_DUNGEON_RANDOM);
 
         // Render this page's slice of dungeons.
@@ -425,24 +424,24 @@ private:
         {
             const DungeonInfo* dg = dungeons[i];
             char buf[128];
-            snprintf(buf, sizeof(buf), "%s (Lv %u-%u)", dg->Name.c_str(), dg->MinLevel, dg->MaxLevel);
+            snprintf(buf, sizeof(buf), "%s (Ур %u-%u)", dg->Name.c_str(), dg->MinLevel, dg->MaxLevel);
             AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, buf,
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_DUNGEON_BASE + dg->MapId);
         }
 
         if (dungeons.empty())
             AddGossipItemFor(player, GOSSIP_ICON_CHAT,
-                "|cFF808080No dungeons available|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
+                "|cFF808080Нет доступных подземелий|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
 
         // Page navigation, rendered conditionally.
         if (page > 0)
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFF00FF00<< Previous Page|r",
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFF00FF00<< Предыдущая страница|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_DUNGEON_PREV_PAGE);
         if (end < total)
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFF00FF00Next Page >>|r",
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFF00FF00Следующая страница >>|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_DUNGEON_NEXT_PAGE);
 
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
 
@@ -459,7 +458,7 @@ private:
         const DifficultyTier* diff = sDMConfig->GetDifficulty(sel.DifficultyId);
         const Theme*          theme = sDMConfig->GetTheme(sel.ThemeId);
 
-        std::string dgName = "Random Dungeon";
+        std::string dgName = "Случайное подземелье";
         if (sel.MapId > 0)
             if (const DungeonInfo* dg = sDMConfig->GetDungeon(sel.MapId))
                 dgName = dg->Name;
@@ -468,25 +467,25 @@ private:
         uint32 ps = g ? g->GetMembersCount() : 1;
 
         char buf[256];
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFD700========== Challenge Summary ==========|r");
-        snprintf(buf, sizeof(buf), "  Difficulty: |cFF00FF00%s|r", diff ? diff->Name.c_str() : "?");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFD700========== Сводка испытания ==========|r");
+        snprintf(buf, sizeof(buf), "  Сложность: |cFF00FF00%s|r", diff ? diff->Name.c_str() : "?");
         ChatHandler(player->GetSession()).SendSysMessage(buf);
-        snprintf(buf, sizeof(buf), "  Scaling:    |cFF00FF00%s|r",
-            sel.ScaleToParty ? "Party Level" : "Dungeon Difficulty");
+        snprintf(buf, sizeof(buf), "  Масштаб:   |cFF00FF00%s|r",
+            sel.ScaleToParty ? "Уровень группы" : "Сложность подземелья");
         ChatHandler(player->GetSession()).SendSysMessage(buf);
-        snprintf(buf, sizeof(buf), "  Theme:      |cFF00FF00%s|r", theme ? theme->Name.c_str() : "?");
+        snprintf(buf, sizeof(buf), "  Тема:      |cFF00FF00%s|r", theme ? theme->Name.c_str() : "?");
         ChatHandler(player->GetSession()).SendSysMessage(buf);
-        snprintf(buf, sizeof(buf), "  Dungeon:    |cFF00FF00%s|r", dgName.c_str());
+        snprintf(buf, sizeof(buf), "  Подземелье:|cFF00FF00%s|r", dgName.c_str());
         ChatHandler(player->GetSession()).SendSysMessage(buf);
-        snprintf(buf, sizeof(buf), "  Party Size: |cFFFFFFFF%u|r player(s)", ps);
+        snprintf(buf, sizeof(buf), "  Игроков:   |cFFFFFFFF%u|r", ps);
         ChatHandler(player->GetSession()).SendSysMessage(buf);
         if (ps > 1)
-            ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFF00  All party members will be teleported!|r");
+            ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFF00  Все члены группы будут телепортированы!|r");
         ChatHandler(player->GetSession()).SendSysMessage("|cFFFFD700========================================|r");
 
-        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|cFF00FF00>> START CHALLENGE <<|r",
+        AddGossipItemFor(player, GOSSIP_ICON_BATTLE, "|cFF00FF00>> НАЧАТЬ ИСПЫТАНИЕ <<|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CONFIRM);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Cancel|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Отмена|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -494,16 +493,16 @@ private:
     void ShowInfoMenu(Player* player, Creature* creature)
     {
         player->PlayerTalkClass->ClearMenus();
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFD700========= Dungeon Master Challenge =========|r");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF1.|r Choose a difficulty tier");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF2.|r Pick scaling: party level or dungeon difficulty");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF3.|r Pick a creature theme");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF4.|r Select a dungeon or go random");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF5.|r You'll be teleported to a cleared instance");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF6.|r Defeat the boss to complete the challenge");
-        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF7.|r Collect gold and gear rewards!");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFD700========= Испытание Мастера подземелий =========|r");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF1.|r Выберите уровень сложности");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF2.|r Выберите масштаб: уровень группы или сложность подземелья");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF3.|r Выберите тему существ");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF4.|r Выберите подземелье или случайное");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF5.|r Вас телепортируют в очищенный инстанс");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF6.|r Победите босса для завершения испытания");
+        ChatHandler(player->GetSession()).SendSysMessage("|cFFFFFFFF7.|r Соберите золото и снаряжение в награду!");
         ChatHandler(player->GetSession()).SendSysMessage("|cFFFFD700==========================================|r");
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "<< Back", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "<< Назад", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
 
@@ -512,14 +511,14 @@ private:
     void ShowStatsAndBoardsMenu(Player* player, Creature* creature)
     {
         player->PlayerTalkClass->ClearMenus();
-        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "My Normal Run Stats",
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Моя статистика",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_STATS_NORMAL);
         if (sDMConfig->IsRoguelikeEnabled())
-            AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFF00FFFFMy Roguelike Stats|r",
+            AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFF00FFFFМоя roguelike статистика|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_STATS_ROGUELIKE);
-        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700Leaderboards|r",
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700Рейтинги|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_MENU);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -539,32 +538,32 @@ private:
         auto chat = ChatHandler(player->GetSession());
         char buf[256];
 
-        chat.SendSysMessage("|cFFFFD700═══════════ Normal Run Stats ═══════════|r");
+        chat.SendSysMessage("|cFFFFD700═══════════ Статистика забегов ═══════════|r");
 
-        snprintf(buf, sizeof(buf), "  Runs: |cFFFFFFFF%u|r  —  Completed: |cFF00FF00%u|r  —  Failed: |cFFFF0000%u|r",
+        snprintf(buf, sizeof(buf), "  Забегов: |cFFFFFFFF%u|r  —  Завершено: |cFF00FF00%u|r  —  Провалено: |cFFFF0000%u|r",
             st.TotalRuns, st.CompletedRuns, st.FailedRuns);
         chat.SendSysMessage(buf);
 
         if (st.TotalRuns > 0)
         {
             float winRate = st.CompletedRuns * 100.0f / st.TotalRuns;
-            snprintf(buf, sizeof(buf), "  Win Rate: |cFFFFD700%.1f%%|r", winRate);
+            snprintf(buf, sizeof(buf), "  Процент побед: |cFFFFD700%.1f%%|r", winRate);
             chat.SendSysMessage(buf);
         }
 
         chat.SendSysMessage(" ");
 
-        snprintf(buf, sizeof(buf), "  Mobs Killed:  |cFFFFFFFF%u|r  —  Bosses Slain: |cFFFFFFFF%u|r",
+        snprintf(buf, sizeof(buf), "  Убито мобов: |cFFFFFFFF%u|r  —  Убито боссов: |cFFFFFFFF%u|r",
             st.TotalMobsKilled, st.TotalBossesKilled);
         chat.SendSysMessage(buf);
 
-        snprintf(buf, sizeof(buf), "  Deaths: |cFFFF0000%u|r", st.TotalDeaths);
+        snprintf(buf, sizeof(buf), "  Смертей: |cFFFF0000%u|r", st.TotalDeaths);
         chat.SendSysMessage(buf);
 
         if (st.TotalDeaths > 0 && st.TotalMobsKilled > 0)
         {
             float kd = static_cast<float>(st.TotalMobsKilled + st.TotalBossesKilled) / st.TotalDeaths;
-            snprintf(buf, sizeof(buf), "  Kill/Death Ratio: |cFFFFD700%.1f|r", kd);
+            snprintf(buf, sizeof(buf), "  K/D: |cFFFFD700%.1f|r", kd);
             chat.SendSysMessage(buf);
         }
 
@@ -572,15 +571,15 @@ private:
         {
             char timeBuf[64];
             FormatTime(st.FastestClear, timeBuf, sizeof(timeBuf));
-            snprintf(buf, sizeof(buf), "  Fastest Clear: |cFF00FFFF%s|r", timeBuf);
+            snprintf(buf, sizeof(buf), "  Лучшее время: |cFF00FFFF%s|r", timeBuf);
             chat.SendSysMessage(buf);
         }
 
         chat.SendSysMessage("|cFFFFD700══════════════════════════════════════════|r");
 
-        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700View Leaderboards|r",
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700Рейтинги|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_MENU);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_STATS_MENU);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -592,38 +591,38 @@ private:
         auto chat = ChatHandler(player->GetSession());
         char buf[256];
 
-        chat.SendSysMessage("|cFF00FFFF═══════════ Roguelike Stats ═══════════|r");
+        chat.SendSysMessage("|cFF00FFFF═══════════ Roguelike статистика ═══════════|r");
 
-        snprintf(buf, sizeof(buf), "  Total Runs: |cFFFFFFFF%u|r", st.TotalRuns);
+        snprintf(buf, sizeof(buf), "  Всего забегов: |cFFFFFFFF%u|r", st.TotalRuns);
         chat.SendSysMessage(buf);
 
-        snprintf(buf, sizeof(buf), "  Highest Tier: |cFFFFD700%u|r  —  Most Floors: |cFFFFD700%u|r",
+        snprintf(buf, sizeof(buf), "  Макс. тир: |cFFFFD700%u|r  —  Макс. этажей: |cFFFFD700%u|r",
             st.HighestTier, st.MostFloorsCleared);
         chat.SendSysMessage(buf);
 
-        snprintf(buf, sizeof(buf), "  Total Floors Cleared: |cFFFFFFFF%u|r", st.TotalFloorsCleared);
+        snprintf(buf, sizeof(buf), "  Всего этажей пройдено: |cFFFFFFFF%u|r", st.TotalFloorsCleared);
         chat.SendSysMessage(buf);
 
         chat.SendSysMessage(" ");
 
-        snprintf(buf, sizeof(buf), "  Mobs Killed: |cFFFFFFFF%u|r  —  Bosses Slain: |cFFFFFFFF%u|r",
+        snprintf(buf, sizeof(buf), "  Убито мобов: |cFFFFFFFF%u|r  —  Убито боссов: |cFFFFFFFF%u|r",
             st.TotalMobsKilled, st.TotalBossesKilled);
         chat.SendSysMessage(buf);
 
-        snprintf(buf, sizeof(buf), "  Deaths: |cFFFF0000%u|r", st.TotalDeaths);
+        snprintf(buf, sizeof(buf), "  Смертей: |cFFFF0000%u|r", st.TotalDeaths);
         chat.SendSysMessage(buf);
 
         if (st.TotalDeaths > 0 && (st.TotalMobsKilled + st.TotalBossesKilled) > 0)
         {
             float kd = static_cast<float>(st.TotalMobsKilled + st.TotalBossesKilled) / st.TotalDeaths;
-            snprintf(buf, sizeof(buf), "  Kill/Death Ratio: |cFFFFD700%.1f|r", kd);
+            snprintf(buf, sizeof(buf), "  K/D: |cFFFFD700%.1f|r", kd);
             chat.SendSysMessage(buf);
         }
 
         if (st.TotalRuns > 0)
         {
             float avgFloors = static_cast<float>(st.TotalFloorsCleared) / st.TotalRuns;
-            snprintf(buf, sizeof(buf), "  Avg Floors/Run: |cFF00FFFF%.1f|r", avgFloors);
+            snprintf(buf, sizeof(buf), "  Среднее этажей/забег: |cFF00FFFF%.1f|r", avgFloors);
             chat.SendSysMessage(buf);
         }
 
@@ -631,15 +630,15 @@ private:
         {
             char timeBuf[64];
             FormatTime(st.LongestRunTime, timeBuf, sizeof(timeBuf));
-            snprintf(buf, sizeof(buf), "  Longest Run: |cFF00FFFF%s|r", timeBuf);
+            snprintf(buf, sizeof(buf), "  Самый долгий забег: |cFF00FFFF%s|r", timeBuf);
             chat.SendSysMessage(buf);
         }
 
         chat.SendSysMessage("|cFF00FFFF══════════════════════════════════════════|r");
 
-        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700View Leaderboards|r",
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "|cFFFFD700Рейтинги|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_MENU);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_STATS_MENU);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -650,18 +649,18 @@ private:
     {
         player->PlayerTalkClass->ClearMenus();
         AddGossipItemFor(player, GOSSIP_ICON_TABARD,
-            "|cFFFFD700Normal Runs — Fastest Clears|r",
+            "|cFFFFD700Обычные забеги — Рекорды скорости|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_NORMAL);
         if (sDMConfig->IsRoguelikeEnabled())
         {
             AddGossipItemFor(player, GOSSIP_ICON_TABARD,
-                "|cFF00FFFFRoguelike — Highest Tier|r",
+                "|cFF00FFFFRoguelike — Наивысший тир|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_RL_TIER);
             AddGossipItemFor(player, GOSSIP_ICON_TABARD,
-                "|cFF00FFFFRoguelike — Most Floors|r",
+                "|cFF00FFFFRoguelike — Больше всего этажей|r",
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_RL_FLOORS);
         }
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_STATS_MENU);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -673,11 +672,11 @@ private:
         auto entries = sDungeonMasterMgr->GetOverallLeaderboard(10);
         auto chat = ChatHandler(player->GetSession());
 
-        chat.SendSysMessage("|cFFFFD700═══════ Normal Runs — Fastest Clears ═══════|r");
+        chat.SendSysMessage("|cFFFFD700═══════ Обычные забеги — Рекорды скорости ═══════|r");
 
         if (entries.empty())
         {
-            chat.SendSysMessage("  |cFF808080No runs recorded yet.|r");
+            chat.SendSysMessage("  |cFF808080Ещё нет записанных забегов.|r");
         }
         else
         {
@@ -704,14 +703,14 @@ private:
                     dg ? dg->Name.c_str() : "?",
                     diff ? diff->Name.c_str() : "?",
                     e.PartySize,
-                    e.Scaled ? " |cFF00FF00[Scaled]|r" : "",
-                    isMe ? " |cFF00FF00<< YOU|r" : "");
+                    e.Scaled ? " |cFF00FF00[Масштаб]|r" : "",
+                    isMe ? " |cFF00FF00<< ВЫ|r" : "");
                 chat.SendSysMessage(buf);
             }
         }
 
         chat.SendSysMessage("|cFFFFD700════════════════════════════════════════════════|r");
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_MENU);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -724,12 +723,12 @@ private:
         auto chat = ChatHandler(player->GetSession());
 
         if (sortByFloors)
-            chat.SendSysMessage("|cFF00FFFF═══════ Roguelike — Most Floors ═══════|r");
+            chat.SendSysMessage("|cFF00FFFF═══════ Roguelike — Больше всего этажей ═══════|r");
         else
-            chat.SendSysMessage("|cFF00FFFF═══════ Roguelike — Highest Tier ═══════|r");
+            chat.SendSysMessage("|cFF00FFFF═══════ Roguelike — Наивысший тир ═══════|r");
 
         if (entries.empty())
-            chat.SendSysMessage("  |cFF808080No roguelike runs recorded yet.|r");
+            chat.SendSysMessage("  |cFF808080Ещё нет roguelike забегов.|r");
         else
         {
             uint32 rank = 0;
@@ -743,24 +742,23 @@ private:
                 bool isMe = (e.Guid == myGuid);
                 char buf[384];
                 snprintf(buf, sizeof(buf),
-                    "  %s#%u%s |cFFFFFFFF%s|r — Tier |cFFFFD700%u|r — |cFF00FF00%u|r floor%s — |cFF00FFFF%s|r — %u kills — %uP%s",
+                    "  %s#%u%s |cFFFFFFFF%s|r — Тир |cFFFFD700%u|r — |cFF00FF00%u|r подз. — |cFF00FFFF%s|r — %u убийств — %uP%s",
                     isMe ? "|cFF00FF00" : "|cFFFFD700",
                     rank,
                     isMe ? "|r" : "|r",
                     e.CharName.c_str(),
                     e.TierReached,
                     e.DungeonsCleared,
-                    e.DungeonsCleared != 1 ? "s" : "",
                     timeBuf,
                     e.TotalKills,
                     e.PartySize,
-                    isMe ? " |cFF00FF00<< YOU|r" : "");
+                    isMe ? " |cFF00FF00<< ВЫ|r" : "");
                 chat.SendSysMessage(buf);
             }
         }
 
         chat.SendSysMessage("|cFF00FFFF══════════════════════════════════════════════|r");
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_BOARD_MENU);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -773,13 +771,13 @@ private:
         uint8 lvl = player->GetLevel();
 
         ChatHandler(player->GetSession()).SendSysMessage(
-            "|cFF00FFFF========== Roguelike Mode ==========|r");
+            "|cFF00FFFF========== Roguelike режим ==========|r");
         ChatHandler(player->GetSession()).SendSysMessage(
-            "|cFFFFFFFFClear dungeons back-to-back. Each clear increases the tier.|r");
+            "|cFFFFFFFFПроходите подземелья одно за другим. Каждое прохождение повышает тир.|r");
         ChatHandler(player->GetSession()).SendSysMessage(
-            "|cFFFFFFFFEnemies get harder, but you gain powerful buffs.|r");
+            "|cFFFFFFFFВраги становятся сильнее, но вы получаете мощные усиления.|r");
         ChatHandler(player->GetSession()).SendSysMessage(
-            "|cFFFF0000One wipe ends the run!|r");
+            "|cFFFF0000Один вайп — и забег завершён!|r");
         ChatHandler(player->GetSession()).SendSysMessage(
             "|cFF00FFFF========================================|r");
 
@@ -787,17 +785,17 @@ private:
         {
             char buf[256];
             if (!d.IsValidForLevel(lvl))
-                snprintf(buf, sizeof(buf), "|cFF808080%s|r (Lv %u-%u) - |cFFFF0000Requires %u+|r",
+                snprintf(buf, sizeof(buf), "|cFF808080%s|r (Ур %u-%u) - |cFFFF0000Требуется %u+|r",
                     d.Name.c_str(), d.MinLevel, d.MaxLevel, d.MinLevel);
             else
-                snprintf(buf, sizeof(buf), "|cFF00FFFF%s|r (Lv %u-%u)",
+                snprintf(buf, sizeof(buf), "|cFF00FFFF%s|r (Ур %u-%u)",
                     d.Name.c_str(), d.MinLevel, d.MaxLevel);
 
             AddGossipItemFor(player,
                 d.IsValidForLevel(lvl) ? GOSSIP_ICON_BATTLE : GOSSIP_ICON_CHAT,
                 buf, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_DIFF_BASE + d.Id);
         }
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -810,15 +808,15 @@ private:
 
         char buf1[256], buf2[256];
         snprintf(buf1, sizeof(buf1),
-            "|cFF00FF00Scale to Party Level|r (Lv %u)", partyLevel);
+            "|cFF00FF00Масштаб по уровню группы|r (Ур %u)", partyLevel);
         snprintf(buf2, sizeof(buf2),
-            "|cFFFFD700Use Dungeon Difficulty|r — Original level ranges");
+            "|cFFFFD700Сложность подземелья|r — Оригинальные диапазоны уровней");
 
         AddGossipItemFor(player, GOSSIP_ICON_BATTLE, buf1,
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_ROGUELIKE_SCALE_PARTY);
         AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, buf2,
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_ROGUELIKE_SCALE_TIER);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -829,7 +827,7 @@ private:
         for (const auto& t : sDMConfig->GetThemes())
             AddGossipItemFor(player, GOSSIP_ICON_BATTLE, t.Name,
                 GOSSIP_SENDER_MAIN, GOSSIP_ACTION_ROGUELIKE_THEME + t.Id);
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Back|r",
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|cFFFF0000<< Назад|r",
             GOSSIP_SENDER_MAIN, GOSSIP_ACTION_CANCEL);
         SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
     }
@@ -843,7 +841,7 @@ private:
           auto it = sSelections.find(player->GetGUID());
           if (it == sSelections.end()) {
               ChatHandler(player->GetSession()).SendSysMessage(
-                  "|cFFFF0000[Roguelike]|r Selection expired. Try again.");
+                  "|cFFFF0000[Roguelike]|r Выбор истёк. Попробуйте снова.");
               return; }
           sel = it->second;
           sSelections.erase(it); }
@@ -852,7 +850,7 @@ private:
         if (!diff || !diff->IsValidForLevel(player->GetLevel()))
         {
             ChatHandler(player->GetSession()).SendSysMessage(
-                "|cFFFF0000[Roguelike]|r Level requirement not met!");
+                "|cFFFF0000[Roguelike]|r Требования по уровню не выполнены!");
             return;
         }
 
@@ -861,12 +859,12 @@ private:
             sel.ThemeId, sel.ScaleToParty))
         {
             ChatHandler(player->GetSession()).SendSysMessage(
-                "|cFFFF0000[Roguelike]|r Failed to start roguelike run!");
+                "|cFFFF0000[Roguelike]|r Не удалось запустить roguelike забег!");
             return;
         }
 
         ChatHandler(player->GetSession()).SendSysMessage(
-            "|cFF00FFFF[Roguelike]|r Run started! Clear dungeons to progress. Good luck!");
+            "|cFF00FFFF[Roguelike]|r Забег начат! Проходите подземелья для прогресса. Удачи!");
     }
 
     // ---- Launch ----
@@ -878,7 +876,7 @@ private:
         { std::lock_guard<std::mutex> lk(sSelMutex);
           auto it = sSelections.find(player->GetGUID());
           if (it == sSelections.end()) {
-              ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Dungeon Master]|r Selection expired. Try again.");
+              ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Мастер подземелий]|r Выбор истёк. Попробуйте снова.");
               return; }
           sel = it->second;
           sSelections.erase(it); }
@@ -886,7 +884,7 @@ private:
         const DifficultyTier* diff = sDMConfig->GetDifficulty(sel.DifficultyId);
         if (!diff || !diff->IsValidForLevel(player->GetLevel()))
         {
-            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Dungeon Master]|r Level requirement not met!");
+            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Мастер подземелий]|r Требования по уровню не выполнены!");
             return;
         }
 
@@ -896,7 +894,7 @@ private:
         {
             auto dgs = sDMConfig->GetDungeonsForLevel(diff->MinLevel, diff->MaxLevel);
             if (dgs.empty()) {
-                ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Dungeon Master]|r No dungeons available!");
+                ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Мастер подземелий]|r Нет доступных подземелий!");
                 return; }
             static thread_local std::mt19937 rng{ std::random_device{}() };
             mapId = dgs[std::uniform_int_distribution<size_t>(0, dgs.size()-1)(rng)]->MapId;
@@ -904,15 +902,15 @@ private:
 
         Session* s = sDungeonMasterMgr->CreateSession(player, sel.DifficultyId, sel.ThemeId, mapId, sel.ScaleToParty);
         if (!s) {
-            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Dungeon Master]|r Failed to create session!");
+            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Мастер подземелий]|r Не удалось создать сессию!");
             return; }
 
         if (!sDungeonMasterMgr->StartDungeon(s)) {
-            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Dungeon Master]|r Failed to initialize dungeon!");
+            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Мастер подземелий]|r Не удалось инициализировать подземелье!");
             sDungeonMasterMgr->AbandonSession(s->SessionId); return; }
 
         if (!sDungeonMasterMgr->TeleportPartyIn(s)) {
-            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Dungeon Master]|r Teleport failed!");
+            ChatHandler(player->GetSession()).SendSysMessage("|cFFFF0000[Мастер подземелий]|r Телепортация не удалась!");
             sDungeonMasterMgr->AbandonSession(s->SessionId); return; }
 
         if (sDMConfig->ShouldAnnounceCompletion())
@@ -921,17 +919,17 @@ private:
             const DungeonInfo* dg = sDMConfig->GetDungeon(mapId);
             char buf[256];
             snprintf(buf, sizeof(buf),
-                "|cFF00FF00[Dungeon Master]|r |cFFFFFFFF%s|r started a |cFFFFD700%s|r |cFF00FFFF%s|r challenge!",
+                "|cFF00FF00[Мастер подземелий]|r |cFFFFFFFF%s|r начал испытание |cFFFFD700%s|r |cFF00FFFF%s|r!",
                 player->GetName().c_str(), diff->Name.c_str(),
-                theme ? theme->Name.c_str() : "Random");
+                theme ? theme->Name.c_str() : "Случайная");
 
             char detail[256];
             snprintf(detail, sizeof(detail),
-                "|cFFFFD700[Dungeon Master]|r Difficulty: |cFF00FF00%s|r  Theme: |cFF00FF00%s|r  Dungeon: |cFF00FF00%s|r  Scaling: |cFF00FF00%s|r",
+                "|cFFFFD700[Мастер подземелий]|r Сложность: |cFF00FF00%s|r  Тема: |cFF00FF00%s|r  Подземелье: |cFF00FF00%s|r  Масштаб: |cFF00FF00%s|r",
                 diff->Name.c_str(),
-                theme ? theme->Name.c_str() : "Random",
-                dg ? dg->Name.c_str() : "Random",
-                sel.ScaleToParty ? "Party Level" : "Dungeon Difficulty");
+                theme ? theme->Name.c_str() : "Случайная",
+                dg ? dg->Name.c_str() : "Случайное",
+                sel.ScaleToParty ? "Уровень группы" : "Сложность подземелья");
 
             // Broadcast to ALL party members
             for (const auto& pd : s->Players)
